@@ -157,6 +157,8 @@ extension ViewController : UITableViewDataSource {
             // handle delete (by removing the data from your array and updating the tableview)
             let cell : EvilNoteTableViewCell = tableView.cellForRow(at: indexPath) as! EvilNoteTableViewCell
             
+            
+            
             deleteNote(fileName: cell.titleLabel.text!)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
