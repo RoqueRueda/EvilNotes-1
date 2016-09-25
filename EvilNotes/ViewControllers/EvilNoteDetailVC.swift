@@ -16,6 +16,10 @@ class EvilNoteDetailVC : UIViewController {
     @IBOutlet weak var scroll: UIScrollView!
     
     @IBAction func saveNote(){
+        
+        // Hide keyboard
+        dismissKeyboard()
+        
         // if editMode {
             // We are editing
             
@@ -44,10 +48,8 @@ class EvilNoteDetailVC : UIViewController {
 
         // Do any additional setup after loading the view.
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: .UIKeyboardWillHide, object: nil)
-        
+        let tap : UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        self.view.addGestureRecognizer(tap)
         
         if fileTitle.isEmpty {
             // New note
@@ -62,20 +64,9 @@ class EvilNoteDetailVC : UIViewController {
         }
     }
     
-    func keyboardWillShow(notification: NSNotification) {
-        
-        if self.contentTextView.isFirstResponder {
-            if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-    
-    func keyboardWillHide(notification: NSNotification) {
-        // if contentTextView.isFirstResponder
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            self.view.frame.origin.y += keyboardSize.height
-        }
+    func dismissKeyboard() {
+        self.titleTextField.resignFirstResponder()
+        self.contentTextView.resignFirstResponder()
     }
     
     func getContentOfFile() -> String {
@@ -148,3 +139,31 @@ class EvilNoteDetailVC : UIViewController {
     */
 
 }
+
+extension EvilNoteDetailVC : UITextFieldDelegate {
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // This is the point to scroll
+        let scrollPoint = CGPoint(x: 0, y: textField.frame.origin.y)
+        self.scroll.setContentOffset(scrollPoint, animated: true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        // Scroll back
+        self.scroll.setContentOffset(CGPoint.zero, animated: true)
+    }
+}
+
+extension EvilNoteDetailVC : UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        let scrollPoint = CGPoint(x: 0, y: textView.frame.origin.y)
+        self.scroll.setContentOffset(scrollPoint, animated: true)
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.scroll.setContentOffset(CGPoint.zero, animated: true)
+    }
+    
+}
+

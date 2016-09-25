@@ -157,9 +157,10 @@ extension ViewController : UITableViewDataSource {
             // handle delete (by removing the data from your array and updating the tableview)
             let cell : EvilNoteTableViewCell = tableView.cellForRow(at: indexPath) as! EvilNoteTableViewCell
             
-            
-            
             deleteNote(fileName: cell.titleLabel.text!)
+            var titles = getTitles();
+            titles.remove(at: indexPath.row)
+            writeIndexFile(notesTitles: titles)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
@@ -177,6 +178,8 @@ extension ViewController : UITableViewDataSource {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
+        
+        
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
